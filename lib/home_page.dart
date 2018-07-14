@@ -1,3 +1,4 @@
+import 'package:flight_search/rounded_button.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,7 +14,7 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           new Container(
             color: Colors.red,
-            height: 200.0,
+            height: 240.0,
           ),
           new AppBar(
             backgroundColor: Colors.transparent,
@@ -21,63 +22,76 @@ class _HomePageState extends State<HomePage> {
             centerTitle: true,
             title: new Text("AirAsia"),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 80.0),
-            child: new Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      new RoundedButton(
-                        text: "ONE WAY",
-                      ),
-                      new RoundedButton(
-                        text: "ROUND",
-                      ),
-                      new RoundedButton(
-                        text: "MULTICITY",
-                      ),
-                    ],
-                  ),
+          Positioned.fill(
+            child: Container(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 60.0),
+                child: new Column(
+                  children: <Widget>[
+                    _buttonsRow(),
+                    Expanded(child: _card()),
+                  ],
                 ),
-              ],
+              ),
             ),
           )
         ],
       ),
     );
   }
-}
 
-class RoundedButton extends StatelessWidget {
-  final String text;
-
-  const RoundedButton({Key key, this.text}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: new InkWell(
-          onTap: () => print('hello'),
-          child: new Container(
-            //width: 100.0,
-            height: 40.0,
-            decoration: new BoxDecoration(
-              border: new Border.all(color: Colors.white, width: 1.0),
-              borderRadius: new BorderRadius.circular(30.0),
+  Widget _card() {
+    return new Card(
+      elevation: 4.0,
+      margin: const EdgeInsets.all(8.0),
+      child: DefaultTabController(
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+                new Positioned.fill(
+                  top: null,
+                  child: new Container(
+                    height: 2.0,
+                    color: new Color(0xFFEEEEEE),
+                  ),
+                ),
+                new TabBar(
+                  tabs: [
+                    Tab(text: "Flight"),
+                    Tab(text: "Train"),
+                    Tab(text: "Bus"),
+                  ],
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                ),
+              ],
             ),
-            child: new Center(
-              child: new Text(
-                text,
-                style: new TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
+            new Text("lalala")
+          ],
         ),
+        length: 3,
+      ),
+    );
+  }
+
+  Widget _buttonsRow() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          new RoundedButton(
+            text: "ONE WAY",
+          ),
+          new RoundedButton(
+            text: "ROUND",
+          ),
+          new RoundedButton(
+            selected: true,
+            text: "MULTICITY",
+          ),
+        ],
       ),
     );
   }
