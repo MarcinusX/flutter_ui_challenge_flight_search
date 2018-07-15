@@ -1,3 +1,4 @@
+import 'package:flight_search/multicity_input.dart';
 import 'package:flight_search/rounded_button.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: new Stack(
+        fit: StackFit.passthrough,
+        overflow: Overflow.clip,
         children: <Widget>[
           new Container(
             color: Colors.red,
@@ -22,16 +25,14 @@ class _HomePageState extends State<HomePage> {
             centerTitle: true,
             title: new Text("AirAsia"),
           ),
-          Positioned.fill(
-            child: Container(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 60.0),
-                child: new Column(
-                  children: <Widget>[
-                    _buttonsRow(),
-                    Expanded(child: _card()),
-                  ],
-                ),
+          Container(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 60.0),
+              child: new Column(
+                children: <Widget>[
+                  _buttonsRow(),
+                  Expanded(child: _card()),
+                ],
               ),
             ),
           )
@@ -46,32 +47,37 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.all(8.0),
       child: DefaultTabController(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Stack(
-              children: <Widget>[
-                new Positioned.fill(
-                  top: null,
-                  child: new Container(
-                    height: 2.0,
-                    color: new Color(0xFFEEEEEE),
-                  ),
-                ),
-                new TabBar(
-                  tabs: [
-                    Tab(text: "Flight"),
-                    Tab(text: "Train"),
-                    Tab(text: "Bus"),
-                  ],
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                ),
-              ],
-            ),
-            new Text("lalala")
+            _tabBar(),
+            Expanded(child: MulticityInput()),
           ],
         ),
         length: 3,
       ),
+    );
+  }
+
+  Stack _tabBar() {
+    return Stack(
+      children: <Widget>[
+        new Positioned.fill(
+          top: null,
+          child: new Container(
+            height: 2.0,
+            color: new Color(0xFFEEEEEE),
+          ),
+        ),
+        new TabBar(
+          tabs: [
+            Tab(text: "Flight"),
+            Tab(text: "Train"),
+            Tab(text: "Bus"),
+          ],
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey,
+        ),
+      ],
     );
   }
 
