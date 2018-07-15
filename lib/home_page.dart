@@ -12,8 +12,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: new Stack(
-        fit: StackFit.passthrough,
-        overflow: Overflow.clip,
         children: <Widget>[
           new Container(
             color: Colors.red,
@@ -25,15 +23,13 @@ class _HomePageState extends State<HomePage> {
             centerTitle: true,
             title: new Text("AirAsia"),
           ),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 60.0),
-              child: new Column(
-                children: <Widget>[
-                  _buttonsRow(),
-                  Expanded(child: _card()),
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.only(top: 60.0),
+            child: new Column(
+              children: <Widget>[
+                _buttonsRow(),
+                Expanded(child: _card()),
+              ],
             ),
           )
         ],
@@ -47,7 +43,6 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.all(8.0),
       child: DefaultTabController(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             _tabBar(),
             Expanded(child: MulticityInput()),
