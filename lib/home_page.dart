@@ -23,13 +23,15 @@ class _HomePageState extends State<HomePage> {
             centerTitle: true,
             title: new Text("AirAsia"),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 60.0),
-            child: new Column(
-              children: <Widget>[
-                _buttonsRow(),
-                Expanded(child: _card()),
-              ],
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 60.0),
+              child: new Column(
+                children: <Widget>[
+                  _buttonsRow(),
+                  Expanded(child: _card()),
+                ],
+              ),
             ),
           )
         ],
@@ -42,11 +44,39 @@ class _HomePageState extends State<HomePage> {
       elevation: 4.0,
       margin: const EdgeInsets.all(8.0),
       child: DefaultTabController(
-        child: Column(
-          children: <Widget>[
-            _tabBar(),
-            Expanded(child: MulticityInput()),
-          ],
+        child: new LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
+            return Column(
+              children: <Widget>[
+                _tabBar(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: new ConstrainedBox(
+                      constraints: new BoxConstraints(
+                        minHeight: viewportConstraints.maxHeight - 48.0,
+                      ),
+                      child: new IntrinsicHeight(
+                          child: Column(
+                            children: <Widget>[
+                              MulticityInput(),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: FloatingActionButton(
+                                  onPressed: () {},
+                                  child: Icon(Icons.timeline),
+                                ),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         length: 3,
       ),
