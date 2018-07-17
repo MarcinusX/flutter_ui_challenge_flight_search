@@ -14,7 +14,13 @@ class _HomePageState extends State<HomePage> {
       body: new Stack(
         children: <Widget>[
           new Container(
-            color: Colors.red,
+            decoration: new BoxDecoration(
+              gradient: new LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.red, const Color(0xFFE64C85)],
+              ),
+            ),
             height: 240.0,
           ),
           new AppBar(
