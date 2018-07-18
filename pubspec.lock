@@ -76,11 +76,25 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_sequence_animation:
+    dependency: transitive
+    description:
+      name: flutter_sequence_animation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_villains:
+    dependency: "direct main"
+    description:
+      name: flutter_villains
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   front_end:
     dependency: transitive
     description:

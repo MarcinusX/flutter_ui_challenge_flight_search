@@ -1,4 +1,4 @@
-import 'package:flight_search/multicity_input.dart';
+import 'package:flight_search/details_card.dart';
 import 'package:flight_search/rounded_button.dart';
 import 'package:flutter/material.dart';
 
@@ -35,80 +35,13 @@ class _HomePageState extends State<HomePage> {
               child: new Column(
                 children: <Widget>[
                   _buttonsRow(),
-                  Expanded(child: _card()),
+                  Expanded(child: DetailsCard()),
                 ],
               ),
             ),
           )
         ],
       ),
-    );
-  }
-
-  Widget _card() {
-    return new Card(
-      elevation: 4.0,
-      margin: const EdgeInsets.all(8.0),
-      child: DefaultTabController(
-        child: new LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints viewportConstraints) {
-            return Column(
-              children: <Widget>[
-                _tabBar(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: new ConstrainedBox(
-                      constraints: new BoxConstraints(
-                        minHeight: viewportConstraints.maxHeight - 48.0,
-                      ),
-                      child: new IntrinsicHeight(
-                          child: Column(
-                            children: <Widget>[
-                              MulticityInput(),
-                              Expanded(
-                                child: Container(),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: FloatingActionButton(
-                                  onPressed: () {},
-                                  child: Icon(Icons.timeline),
-                                ),
-                              ),
-                            ],
-                          )),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        length: 3,
-      ),
-    );
-  }
-
-  Stack _tabBar() {
-    return Stack(
-      children: <Widget>[
-        new Positioned.fill(
-          top: null,
-          child: new Container(
-            height: 2.0,
-            color: new Color(0xFFEEEEEE),
-          ),
-        ),
-        new TabBar(
-          tabs: [
-            Tab(text: "Flight"),
-            Tab(text: "Train"),
-            Tab(text: "Bus"),
-          ],
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-        ),
-      ],
     );
   }
 
@@ -132,4 +65,34 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class FadeRoute extends PageRoute {
+
+  final Widget child;
+
+  FadeRoute(this.child);
+
+  @override
+  Color get barrierColor => null;
+
+  @override
+  String get barrierLabel => null;
+
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
+    return new FadeTransition(
+      opacity: animation,
+      child: child,
+    );
+  }
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 300);
+
 }
