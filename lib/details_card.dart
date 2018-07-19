@@ -1,4 +1,5 @@
 import 'package:flight_search/multicity_input.dart';
+import 'package:flight_search/price_tab.dart';
 import 'package:flutter/material.dart';
 
 class DetailsCard extends StatefulWidget {
@@ -6,16 +7,9 @@ class DetailsCard extends StatefulWidget {
   _DetailsCardState createState() => _DetailsCardState();
 }
 
-class _DetailsCardState extends State<DetailsCard>
-    with SingleTickerProviderStateMixin {
-  AnimationController _transitionAnimationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _transitionAnimationController =
-        new AnimationController(vsync: this, duration: Duration(seconds: 1));
-  }
+class _DetailsCardState extends State<DetailsCard> {
+  bool showFirstOptionInAppBar = true;
+  bool showMultiCityInput = true;
 
   @override
   Widget build(BuildContext context) {
@@ -25,47 +19,51 @@ class _DetailsCardState extends State<DetailsCard>
       child: DefaultTabController(
         child: new LayoutBuilder(
           builder: (BuildContext context, BoxConstraints viewportConstraints) {
-            return AnimatedBuilder(
-              animation: _transitionAnimationController,
-              builder: (context, child) => Column(
-                    children: <Widget>[
-                      _tabBar(
-                          showFirstOption:
-                              !_transitionAnimationController.isCompleted),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: new ConstrainedBox(
-                            constraints: new BoxConstraints(
-                              minHeight: viewportConstraints.maxHeight - 48.0,
-                            ),
-                            child: new IntrinsicHeight(
-                                child: Column(
-                              children: <Widget>[
-                                MulticityInput(),
-                                Expanded(
-                                  child: Container(),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: FloatingActionButton(
-                                    onPressed: () {
-                                      _transitionAnimationController.forward();
-                                    },
-                                    child: Icon(Icons.timeline),
-                                  ),
-                                ),
-                              ],
-                            )),
-                          ),
+            return Column(
+              children: <Widget>[
+                _tabBar(showFirstOption: showFirstOptionInAppBar),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: new ConstrainedBox(
+                      constraints: new BoxConstraints(
+                        minHeight: viewportConstraints.maxHeight - 48.0,
+                      ),
+                      child: new IntrinsicHeight(
+                        child: showMultiCityInput
+                            ? _buildMulticityTab()
+                            : PriceTab(
+                          onPlaneSizeAnimated: () =>
+                              setState(
+                                      () => showFirstOptionInAppBar = false),
                         ),
                       ),
-                    ],
+                    ),
                   ),
+                ),
+              ],
             );
           },
         ),
         length: 3,
       ),
+    );
+  }
+
+  Widget _buildMulticityTab() {
+    return Column(
+      children: <Widget>[
+        MulticityInput(),
+        Expanded(
+          child: Container(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0, top: 8.0),
+          child: FloatingActionButton(
+            onPressed: () => setState(() => showMultiCityInput = false),
+            child: Icon(Icons.timeline),
+          ),
+        ),
+      ],
     );
   }
 
