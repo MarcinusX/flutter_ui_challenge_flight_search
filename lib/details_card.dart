@@ -32,6 +32,7 @@ class _DetailsCardState extends State<DetailsCard> {
                         child: showMultiCityInput
                             ? _buildMulticityTab()
                             : PriceTab(
+                          height: viewportConstraints.maxHeight - 48.0,
                           onPlaneSizeAnimated: () =>
                               setState(
                                       () => showFirstOptionInAppBar = false),
