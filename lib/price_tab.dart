@@ -1,28 +1,19 @@
 import 'dart:async';
 
+import 'package:flight_search/flight_stop.dart';
+import 'package:flight_search/flight_stop_card.dart';
 import 'package:flutter/material.dart';
 
 class PriceTab extends StatefulWidget {
   final double height;
+  final double width;
   final VoidCallback onPlaneSizeAnimated;
 
-  const PriceTab({Key key, this.onPlaneSizeAnimated, this.height})
+  const PriceTab({Key key, this.onPlaneSizeAnimated, this.height, this.width})
       : super(key: key);
 
   @override
   _PriceTabState createState() => _PriceTabState();
-}
-
-class FlightStop {
-  String from;
-  String to;
-  String date;
-  String duration;
-  String price;
-  String fromToTime;
-
-  FlightStop(this.from, this.to, this.date, this.duration, this.price,
-      this.fromToTime);
 }
 
 class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
@@ -72,7 +63,9 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
           _initialPlainAnimationController.isCompleted
               ? _buildTravelPlaneAnimation()
               : _buildInitialPlaneAnimation(),
-        ]
+        ]..addAll(
+          _flightStops.map((stop) => _buildStopCard(stop)),
+        )
           ..addAll(
             _flightStops.map(
                   (stop) => _buildDot(stop),
@@ -194,5 +187,26 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
       );
       stopPositions.add(animation);
     }
+  }
+
+  Widget _buildStopCard(FlightStop stop) {
+    int index = _flightStops.indexOf(stop);
+    double topMargin = 8.0 + _planeIconSize + _flightStopHeight * (index + 0.5);
+    bool isLeft = index.isOdd;
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.only(top: topMargin),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            isLeft ? Container() : Expanded(child: Container()),
+            Expanded(child: FlightStopCard(flightStop: stop, isLeft: isLeft)),
+            !isLeft ? Container() : Expanded(child: Container()),
+          ],
+        ),
+      ),
+    );
   }
 }
