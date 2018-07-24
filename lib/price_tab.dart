@@ -27,12 +27,12 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   final double _flightStopHeight = 80.0;
   final List<FlightStop> _flightStops = [
     FlightStop("JFK", "ORY", "JUN 05", "6h 25m", "\$851", "9:26 am - 3:43 pm"),
-//    FlightStop("MRG", "FTB", "JUN 20", "6h 25m", "\$532", "9:26 am - 3:43 pm"),
-//    FlightStop("ERT", "TVS", "JUN 20", "6h 25m", "\$718", "9:26 am - 3:43 pm"),
-//    FlightStop("KKR", "RTY", "JUN 20", "6h 25m", "\$663", "9:26 am - 3:43 pm"),
+    FlightStop("MRG", "FTB", "JUN 20", "6h 25m", "\$532", "9:26 am - 3:43 pm"),
+    FlightStop("ERT", "TVS", "JUN 20", "6h 25m", "\$718", "9:26 am - 3:43 pm"),
+    FlightStop("KKR", "RTY", "JUN 20", "6h 25m", "\$663", "9:26 am - 3:43 pm"),
   ];
   final List<Animation<double>> stopPositions = [];
-  final stop1Key = new GlobalKey<FlightStopCardState>();
+  final List<GlobalKey<FlightStopCardState>> _stopKeys = [];
 
   double get _planeTopPadding =>
       _endPaddingTop +
@@ -45,6 +45,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _initAnimations();
+    _flightStops.forEach((stop) =>
+        _stopKeys.add(new GlobalKey<FlightStopCardState>()));
     _initialPlainAnimationController.forward();
   }
 
@@ -66,7 +68,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
               : _buildInitialPlaneAnimation(),
         ]..addAll(
           _flightStops.map((stop) =>
-              _buildStopCard(stop, stop == _flightStops[0] ? stop1Key : null)),
+              _buildStopCard(stop)),
         )
           ..addAll(
             _flightStops.map(
@@ -173,7 +175,11 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         vsync: this, duration: Duration(milliseconds: 1000));
     _dotsAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        stop1Key.currentState.runEntryAnimation();
+        Future.forEach(_stopKeys, (GlobalKey<FlightStopCardState> stopKey) {
+          return new Future.delayed(Duration(milliseconds: 200), () {
+            stopKey.currentState.runEntryAnimation();
+          });
+        });
       }
     });
     final delayInterval = 0.2;
@@ -197,9 +203,10 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   }
 
 
-  Widget _buildStopCard(FlightStop stop, Key key) {
+  Widget _buildStopCard(FlightStop stop) {
     int index = _flightStops.indexOf(stop);
     double topMargin = 8.0 + _planeIconSize + _flightStopHeight * (index + 0.5);
+    Key key = _stopKeys[index];
     bool isLeft = index.isOdd;
     return Align(
       alignment: Alignment.topCenter,

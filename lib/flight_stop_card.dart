@@ -7,6 +7,7 @@ class FlightStopCard extends StatefulWidget {
   final bool isLeft;
   static const double height = 80.0;
   static const double width = 140.0;
+
   const FlightStopCard(
       {Key key, @required this.flightStop, @required this.isLeft})
       : super(key: key);
@@ -17,153 +18,224 @@ class FlightStopCard extends StatefulWidget {
 
 class FlightStopCardState extends State<FlightStopCard>
     with TickerProviderStateMixin {
-  AnimationController cardController;
+  AnimationController animationController;
   Animation<double> cardSizeAnimation;
   Animation<double> durationPositionAnimation;
+  Animation<double> airportsPositionAnimation;
+  Animation<double> datePositionAnimation;
+  Animation<double> pricePositionAnimation;
+  Animation<double> fromToPositionAnimation;
   Animation<double> lineAnimation;
 
   @override
   void initState() {
     super.initState();
-    cardController = new AnimationController(
+    animationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 1000));
     cardSizeAnimation = new CurvedAnimation(
-        parent: cardController, curve: new ElasticOutCurve(0.95));
+        parent: animationController,
+        curve: new Interval(0.2, 1.0, curve: new ElasticOutCurve(0.95)));
     durationPositionAnimation = new CurvedAnimation(
-        parent: cardController,
-        curve: new Interval(0.0, 0.8, curve: new ElasticOutCurve(0.95)));
-    lineAnimation = new CurvedAnimation(parent: cardController,
+        parent: animationController,
+        curve: new Interval(0.05, 0.8, curve: new ElasticOutCurve(0.95)));
+    airportsPositionAnimation = new CurvedAnimation(
+        parent: animationController,
+        curve: new Interval(0.0, 0.6, curve: new ElasticOutCurve(0.95)));
+    datePositionAnimation = new CurvedAnimation(
+        parent: animationController,
+        curve: new Interval(0.2, 0.8, curve: new ElasticOutCurve(0.8)));
+    pricePositionAnimation = new CurvedAnimation(
+        parent: animationController,
+        curve: new Interval(0.0, 0.75, curve: new ElasticOutCurve(0.95)));
+    fromToPositionAnimation = new CurvedAnimation(
+        parent: animationController,
+        curve: new Interval(0.1, 0.7, curve: new ElasticOutCurve(0.95)));
+    lineAnimation = new CurvedAnimation(
+        parent: animationController,
         curve: new Interval(0.0, 0.2, curve: Curves.linear));
   }
 
   @override
   void dispose() {
-    cardController.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
   runEntryAnimation() {
-    cardController.forward();
+    animationController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget card = Container(
-      width: 1 * 140.0,
-      height: 1 * 80.0,
-      child: new Card(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(widget.flightStop.from + " * " + widget.flightStop.to),
-                Text(widget.flightStop.duration)
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(widget.flightStop.date),
-                Text(widget.flightStop.price)
-              ],
-            ),
-            Text(widget.flightStop.fromToTime)
-          ],
-        ),
-      ),
-    );
-
     return Container(
       height: FlightStopCard.height,
       child: AnimatedBuilder(
-        animation: cardController,
+        animation: animationController,
         builder: (context, child) {
-          BoxConstraints cons = context
-              .findRenderObject()
-              ?.constraints;
-          double maxHeight = FlightStopCard.height;
-          double maxWidth = cons?.maxWidth ?? 0.0;
-          print(cons);
           return new Stack(
             alignment: Alignment.centerLeft,
             children: <Widget>[
-              buildLine(maxWidth),
-              buildCard(maxWidth),
-              buildDurationText(maxWidth)
+              buildLine(),
+              buildCard(),
+              buildDurationText(),
+              buildAirportNamesText(),
+              buildDateText(),
+              buildPriceText(),
+              buildFromToTimeText(),
             ],
           );
         },
       ),
     );
-    List<Widget> children = <Widget>[
-      Expanded(
-        child: new Container(
-          height: 2.0,
+  }
+
+  double get maxWidth {
+    RenderBox renderBox = context.findRenderObject();
+    BoxConstraints constraints = renderBox?.constraints;
+    double maxWidth = constraints?.maxWidth ?? 0.0;
+    return maxWidth;
+  }
+
+  Positioned buildDurationText() {
+    return Positioned(
+      top: getMarginTop(durationPositionAnimation.value),
+      right: getMarginRight(durationPositionAnimation.value),
+      child: Text(
+        widget.flightStop.duration,
+        style: new TextStyle(
+          fontSize: 10.0 * durationPositionAnimation.value,
           color: Colors.grey,
         ),
       ),
-      card
-    ];
+    );
+  }
 
-    if (widget.isLeft) {
-      children = children.reversed.toList();
-    }
-
-    return AnimatedBuilder(
-      animation: cardSizeAnimation,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: children,
+  Positioned buildAirportNamesText() {
+    return Positioned(
+      top: getMarginTop(airportsPositionAnimation.value),
+      left: getMarginLeft(airportsPositionAnimation.value),
+      child: Text(
+        "${widget.flightStop.from} \u00B7 ${widget.flightStop.to}",
+        style: new TextStyle(
+          fontSize: 14.0 * airportsPositionAnimation.value,
+          color: Colors.grey,
+        ),
       ),
     );
   }
 
-  Positioned buildDurationText(double maxWidth) {
-    double constMarginTop = 6.0;
-    double constMarginRight = 16.0;
-    double marginTop = constMarginTop +
-        (1 - durationPositionAnimation.value) * FlightStopCard.height * 0.5;
-    double marginRight = constMarginRight +
-        (1 - durationPositionAnimation.value) * maxWidth;
-    double fontSize = 16.0 * durationPositionAnimation.value;
+  Positioned buildDateText() {
+    double fontSize = 14.0 * datePositionAnimation.value;
     return Positioned(
-      top: marginTop,
-      right: marginRight,
+      left: getMarginLeft(datePositionAnimation.value),
       child: Text(
-        widget.flightStop.duration, style: new TextStyle(fontSize: fontSize),),
+        "${widget.flightStop.date}",
+        style: new TextStyle(
+          fontSize: 14.0 * datePositionAnimation.value,
+          color: Colors.grey,
+        ),
+      ),
     );
   }
 
-  Widget buildLine(double maxWidth) {
+  Positioned buildPriceText() {
+    return Positioned(
+      right: getMarginRight(pricePositionAnimation.value),
+      child: Text(
+        "${widget.flightStop.price}",
+        style: new TextStyle(
+            fontSize: 16.0 * pricePositionAnimation.value,
+            color: Colors.black,
+            fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Positioned buildFromToTimeText() {
+    return Positioned(
+      left: getMarginLeft(fromToPositionAnimation.value),
+      bottom: getMarginBottom(fromToPositionAnimation.value),
+      child: Text(
+        "${widget.flightStop.fromToTime}",
+        style: new TextStyle(
+            fontSize: 12.0 * fromToPositionAnimation.value,
+            color: Colors.grey,
+            fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  Widget buildLine() {
     double maxLength = maxWidth - FlightStopCard.width;
     return Align(
-        alignment: Alignment.centerLeft,
+        alignment: widget.isLeft ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           height: 2.0,
           width: lineAnimation.value * maxLength,
           color: Colors.grey,
-        )
-    );
+        ));
   }
 
-  Positioned buildCard(double maxWidth) {
-    double constMarginRight = 8.0;
-    double marginRight = constMarginRight +
-        (1 - cardSizeAnimation.value) * maxWidth;
+  Positioned buildCard() {
+    double constOuterMargin = 8.0;
+    double outerMargin =
+        constOuterMargin + (1 - cardSizeAnimation.value) * maxWidth;
     return Positioned(
-      right: marginRight,
+      right: widget.isLeft ? null : outerMargin,
+      left: widget.isLeft ? outerMargin : null,
       child: Transform.scale(
         scale: cardSizeAnimation.value,
         child: Container(
           width: 140.0,
           height: 80.0,
-          child: new Card(),
+          child: new Card(
+            color: Colors.grey.shade100,
+          ),
         ),
       ),
     );
+  }
+
+  double getMarginBottom(double animationValue) {
+    double startBottomMargin = FlightStopCard.height * 0.5;
+    double minBottomMargin = 8.0;
+    double bottomMargin =
+        minBottomMargin + (1 - animationValue) * startBottomMargin;
+    return bottomMargin;
+  }
+
+  double getMarginTop(double animationValue) {
+    double constMarginTop = 8.0;
+    double marginTop =
+        constMarginTop + (1 - animationValue) * FlightStopCard.height * 0.5;
+    return marginTop;
+  }
+
+  double getMarginLeft(double animationValue) {
+    if (widget.isLeft) {
+      double minHorizontalMargin = 16.0;
+      double maxHorizontalMargin = maxWidth - minHorizontalMargin;
+      double horizontalMargin =
+          minHorizontalMargin + (1 - animationValue) * maxHorizontalMargin;
+      return horizontalMargin;
+    } else {
+      double maxHorizontalMargin = maxWidth - FlightStopCard.width;
+      double horizontalMargin = animationValue * maxHorizontalMargin;
+      return horizontalMargin;
+    }
+  }
+
+  double getMarginRight(double animationValue) {
+    if (widget.isLeft) {
+      double maxHorizontalMargin = maxWidth - FlightStopCard.width;
+      double horizontalMargin = animationValue * maxHorizontalMargin;
+      return horizontalMargin;
+    } else {
+      double minHorizontalMargin = 16.0;
+      double maxHorizontalMargin = maxWidth - minHorizontalMargin;
+      double horizontalMargin =
+          minHorizontalMargin + (1 - animationValue) * maxHorizontalMargin;
+      return horizontalMargin;
+    }
   }
 }
