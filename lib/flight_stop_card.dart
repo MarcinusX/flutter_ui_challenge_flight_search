@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flight_search/flight_stop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,8 +10,7 @@ class FlightStopCard extends StatefulWidget {
   static const double height = 80.0;
   static const double width = 140.0;
 
-  const FlightStopCard(
-      {Key key, @required this.flightStop, @required this.isLeft})
+  const FlightStopCard({Key key, @required this.flightStop, @required this.isLeft})
       : super(key: key);
 
   @override
@@ -26,6 +27,7 @@ class FlightStopCardState extends State<FlightStopCard>
   Animation<double> pricePositionAnimation;
   Animation<double> fromToPositionAnimation;
   Animation<double> lineAnimation;
+  Orientation orientation;
 
   @override
   void initState() {
@@ -67,6 +69,17 @@ class FlightStopCardState extends State<FlightStopCard>
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery
+        .of(context)
+        .orientation != orientation) {
+      new Future.delayed(Duration(milliseconds: 10), () {
+        setState(() =>
+        orientation = MediaQuery
+            .of(context)
+            .orientation);
+      });
+    }
+    print(maxWidth);
     return Container(
       height: FlightStopCard.height,
       child: AnimatedBuilder(
@@ -125,7 +138,6 @@ class FlightStopCardState extends State<FlightStopCard>
   }
 
   Positioned buildDateText() {
-    double fontSize = 14.0 * datePositionAnimation.value;
     return Positioned(
       left: getMarginLeft(datePositionAnimation.value),
       child: Text(
