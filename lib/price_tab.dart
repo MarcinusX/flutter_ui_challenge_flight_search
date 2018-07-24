@@ -27,11 +27,12 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   final double _flightStopHeight = 80.0;
   final List<FlightStop> _flightStops = [
     FlightStop("JFK", "ORY", "JUN 05", "6h 25m", "\$851", "9:26 am - 3:43 pm"),
-    FlightStop("MRG", "FTB", "JUN 20", "6h 25m", "\$532", "9:26 am - 3:43 pm"),
-    FlightStop("ERT", "TVS", "JUN 20", "6h 25m", "\$718", "9:26 am - 3:43 pm"),
-    FlightStop("KKR", "RTY", "JUN 20", "6h 25m", "\$663", "9:26 am - 3:43 pm"),
+//    FlightStop("MRG", "FTB", "JUN 20", "6h 25m", "\$532", "9:26 am - 3:43 pm"),
+//    FlightStop("ERT", "TVS", "JUN 20", "6h 25m", "\$718", "9:26 am - 3:43 pm"),
+//    FlightStop("KKR", "RTY", "JUN 20", "6h 25m", "\$663", "9:26 am - 3:43 pm"),
   ];
   final List<Animation<double>> stopPositions = [];
+  final stop1Key = new GlobalKey<FlightStopCardState>();
 
   double get _planeTopPadding =>
       _endPaddingTop +
@@ -64,7 +65,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
               ? _buildTravelPlaneAnimation()
               : _buildInitialPlaneAnimation(),
         ]..addAll(
-          _flightStops.map((stop) => _buildStopCard(stop)),
+          _flightStops.map((stop) =>
+              _buildStopCard(stop, stop == _flightStops[0] ? stop1Key : null)),
         )
           ..addAll(
             _flightStops.map(
@@ -169,6 +171,11 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   _initDotAnimation() {
     _dotsAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 1000));
+    _dotsAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        stop1Key.currentState.runEntryAnimation();
+      }
+    });
     final delayInterval = 0.2;
     final slideInterval = 0.4;
     double startingPaddingTop = widget.height + 16.0;
@@ -189,7 +196,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildStopCard(FlightStop stop) {
+
+  Widget _buildStopCard(FlightStop stop, Key key) {
     int index = _flightStops.indexOf(stop);
     double topMargin = 8.0 + _planeIconSize + _flightStopHeight * (index + 0.5);
     bool isLeft = index.isOdd;
@@ -202,7 +210,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             isLeft ? Container() : Expanded(child: Container()),
-            Expanded(child: FlightStopCard(flightStop: stop, isLeft: isLeft)),
+            Expanded(child: FlightStopCard(
+              flightStop: stop, isLeft: isLeft, key: key,)),
             !isLeft ? Container() : Expanded(child: Container()),
           ],
         ),
