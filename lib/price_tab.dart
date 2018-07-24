@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flight_search/fade_route.dart';
 import 'package:flight_search/flight_stop.dart';
 import 'package:flight_search/flight_stop_card.dart';
+import 'package:flight_search/tickets_page.dart';
 import 'package:flutter/material.dart';
 
 class PriceTab extends StatefulWidget {
@@ -22,9 +24,10 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   AnimationController _planeTravelAnimationController;
   Animation<double> _planeTravelAnimation;
   AnimationController _dotsAnimationController;
+  AnimationController _fabAnimationController;
+  Animation<double> _fabAnimation;
   final double _startPaddingBottom = 16.0;
   final double _endPaddingTop = 16.0;
-  final double _flightStopHeight = 80.0;
   final List<FlightStop> _flightStops = [
     FlightStop("JFK", "ORY", "JUN 05", "6h 25m", "\$851", "9:26 am - 3:43 pm"),
     FlightStop("MRG", "FTB", "JUN 20", "6h 25m", "\$532", "9:26 am - 3:43 pm"),
@@ -45,8 +48,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _initAnimations();
-    _flightStops.forEach((stop) =>
-        _stopKeys.add(new GlobalKey<FlightStopCardState>()));
+    _flightStops
+        .forEach((stop) => _stopKeys.add(new GlobalKey<FlightStopCardState>()));
     _initialPlainAnimationController.forward();
   }
 
@@ -66,15 +69,10 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
           _initialPlainAnimationController.isCompleted
               ? _buildTravelPlaneAnimation()
               : _buildInitialPlaneAnimation(),
-        ]..addAll(
-          _flightStops.map((stop) =>
-              _buildStopCard(stop)),
-        )
-          ..addAll(
-            _flightStops.map(
-                  (stop) => _buildDot(stop),
-            ),
-          ),
+        ]
+          ..addAll(_flightStops.map((stop) => _buildStopCard(stop)))..addAll(
+              _flightStops.map((stop) => _buildDot(stop)))
+          ..add(_buildFab()),
       ),
     );
   }
@@ -90,7 +88,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
               _buildPlaneIcon(),
               Container(
                 width: 2.0,
-                height: _flightStops.length * _flightStopHeight,
+                height: _flightStops.length * 0.8 * FlightStopCard.height,
                 color: Color.fromARGB(255, 200, 200, 200),
               )
             ],
@@ -121,7 +119,9 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   void _initAnimations() {
     _initInitialAnimation();
     _initPlaneTravelAnimation();
-    _initDotAnimation();
+    _initDotAnimationController();
+    _initDotAnimations();
+    _initFabAnimationController();
   }
 
   void _initPlaneTravelAnimation() {
@@ -170,29 +170,25 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     );
   }
 
-  _initDotAnimation() {
-    _dotsAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
-    _dotsAnimationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Future.forEach(_stopKeys, (GlobalKey<FlightStopCardState> stopKey) {
-          return new Future.delayed(Duration(milliseconds: 200), () {
-            stopKey.currentState.runEntryAnimation();
-          });
-        });
-      }
-    });
-    final delayInterval = 0.2;
-    final slideInterval = 0.4;
-    double startingPaddingTop = widget.height + 16.0;
-    double constMarginTop = 16.0 + _planeIconSize + 0.5 * _flightStopHeight;
-    for (int i = 0; i < _flightStops.length; i++) {
-      final start = delayInterval * i;
-      final end = start + slideInterval;
+  void _initDotAnimations() {
+    //what part of whole animation takes one dot travel
+    final double slideDurationInterval = 0.4;
+    //what are delays between dot animations
+    final double slideDelayInterval =
+    0.2; //what are delays between dot animations
+    //at the bottom of the screen
+    double startingMarginTop = widget.height + 16.0;
+    //minimal margin from the top (where first dot will be placed)
+    double minMarginTop =
+        16.0 + _planeIconSize + 0.5 * 0.8 * FlightStopCard.height;
 
-      double endingPaddingTop = constMarginTop + i * _flightStopHeight;
+    for (int i = 0; i < _flightStops.length; i++) {
+      final start = slideDelayInterval * i;
+      final end = start + slideDurationInterval;
+
+      double finalMarginTop = minMarginTop + i * 0.8 * FlightStopCard.height;
       Animation<double> animation =
-      new Tween(begin: startingPaddingTop, end: endingPaddingTop).animate(
+      new Tween(begin: startingMarginTop, end: finalMarginTop).animate(
         new CurvedAnimation(
           parent: _dotsAnimationController,
           curve: new Interval(start, end, curve: Curves.easeOut),
@@ -202,10 +198,34 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     }
   }
 
+  void _initDotAnimationController() {
+    _dotsAnimationController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
+    _dotsAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _animateFlightStopCards().then(
+              (_) =>
+          new Future.delayed(
+            Duration(milliseconds: 800),
+                () => _animateFab(),
+          ),
+        );
+      }
+    });
+  }
+
+  Future _animateFlightStopCards() async {
+    return Future.forEach(_stopKeys, (GlobalKey<FlightStopCardState> stopKey) {
+      return new Future.delayed(Duration(milliseconds: 200), () {
+        stopKey.currentState.runEntryAnimation();
+      });
+    });
+  }
 
   Widget _buildStopCard(FlightStop stop) {
     int index = _flightStops.indexOf(stop);
-    double topMargin = 8.0 + _planeIconSize + _flightStopHeight * (index + 0.5);
+    double topMargin =
+        8.0 + _planeIconSize + 0.8 * FlightStopCard.height * (index + 0.5);
     Key key = _stopKeys[index];
     bool isLeft = index.isOdd;
     return Align(
@@ -217,12 +237,42 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             isLeft ? Container() : Expanded(child: Container()),
-            Expanded(child: FlightStopCard(
-              flightStop: stop, isLeft: isLeft, key: key,)),
+            Expanded(
+                child: FlightStopCard(
+                  flightStop: stop,
+                  isLeft: isLeft,
+                  key: key,
+                )),
             !isLeft ? Container() : Expanded(child: Container()),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildFab() {
+    return Positioned(
+      bottom: 16.0,
+      child: ScaleTransition(
+        scale: _fabAnimation,
+        child: FloatingActionButton(
+          onPressed: () =>
+              Navigator.of(context).push(
+                  new FadeRoute(builder: (context) => TicketsPage())),
+          child: Icon(Icons.check),
+        ),
+      ),
+    );
+  }
+
+  void _initFabAnimationController() {
+    _fabAnimationController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 300));
+    _fabAnimation = new CurvedAnimation(
+        parent: _fabAnimationController, curve: Curves.easeOut);
+  }
+
+  _animateFab() {
+    _fabAnimationController.forward();
   }
 }

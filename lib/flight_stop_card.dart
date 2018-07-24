@@ -10,7 +10,8 @@ class FlightStopCard extends StatefulWidget {
   static const double height = 80.0;
   static const double width = 140.0;
 
-  const FlightStopCard({Key key, @required this.flightStop, @required this.isLeft})
+  const FlightStopCard(
+      {Key key, @required this.flightStop, @required this.isLeft})
       : super(key: key);
 
   @override
@@ -33,7 +34,7 @@ class FlightStopCardState extends State<FlightStopCard>
   void initState() {
     super.initState();
     animationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+        vsync: this, duration: Duration(milliseconds: 1200));
     cardSizeAnimation = new CurvedAnimation(
         parent: animationController,
         curve: new Interval(0.2, 1.0, curve: new ElasticOutCurve(0.95)));
@@ -42,10 +43,10 @@ class FlightStopCardState extends State<FlightStopCard>
         curve: new Interval(0.05, 0.8, curve: new ElasticOutCurve(0.95)));
     airportsPositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.0, 0.6, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.0, 0.7, curve: new ElasticOutCurve(0.95)));
     datePositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.2, 0.8, curve: new ElasticOutCurve(0.8)));
+        curve: new Interval(0.1, 0.9, curve: new ElasticOutCurve(0.8)));
     pricePositionAnimation = new CurvedAnimation(
         parent: animationController,
         curve: new Interval(0.0, 0.75, curve: new ElasticOutCurve(0.95)));
@@ -72,14 +73,15 @@ class FlightStopCardState extends State<FlightStopCard>
     if (MediaQuery
         .of(context)
         .orientation != orientation) {
-      new Future.delayed(Duration(milliseconds: 10), () {
-        setState(() =>
-        orientation = MediaQuery
-            .of(context)
-            .orientation);
-      });
+      new Future.delayed(
+        Duration(milliseconds: 10),
+            () =>
+            setState(() =>
+            orientation = MediaQuery
+                .of(context)
+                .orientation),
+      );
     }
-    print(maxWidth);
     return Container(
       height: FlightStopCard.height,
       child: AnimatedBuilder(
