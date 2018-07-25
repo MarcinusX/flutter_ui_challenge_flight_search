@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flight_search/multicity_input.dart';
 import 'package:flight_search/price_tab.dart';
 import 'package:flutter/material.dart';
@@ -13,39 +15,52 @@ class _DetailsCardState extends State<DetailsCard> {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
-      elevation: 4.0,
-      margin: const EdgeInsets.all(8.0),
-      child: DefaultTabController(
-        child: new LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints viewportConstraints) {
-            return Column(
-              children: <Widget>[
-                _tabBar(showFirstOption: showFirstOptionInAppBar),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: new ConstrainedBox(
-                      constraints: new BoxConstraints(
-                        minHeight: viewportConstraints.maxHeight - 48.0,
-                      ),
-                      child: new IntrinsicHeight(
-                        child: showMultiCityInput
-                            ? _buildMulticityTab()
-                            : PriceTab(
-                          height: viewportConstraints.maxHeight - 48.0,
-                          onPlaneSizeAnimated: () =>
-                              setState(
-                                      () => showFirstOptionInAppBar = false),
+    return WillPopScope(
+      onWillPop: () {
+        if (!showMultiCityInput) {
+          setState(() {
+            showMultiCityInput = true;
+          });
+          return Future(() => false);
+        } else {
+          return Future(() => true);
+        }
+      },
+      child: new Card(
+        elevation: 4.0,
+        margin: const EdgeInsets.all(8.0),
+        child: DefaultTabController(
+          child: new LayoutBuilder(
+            builder: (BuildContext context,
+                BoxConstraints viewportConstraints) {
+              return Column(
+                children: <Widget>[
+                  _tabBar(showFirstOption: showFirstOptionInAppBar),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: new ConstrainedBox(
+                        constraints: new BoxConstraints(
+                          minHeight: viewportConstraints.maxHeight - 48.0,
+                        ),
+                        child: new IntrinsicHeight(
+                          child: showMultiCityInput
+                              ? _buildMulticityTab()
+                              : PriceTab(
+                            height: viewportConstraints.maxHeight - 48.0,
+                            onPlaneSizeAnimated: () =>
+                                setState(
+                                        () => showFirstOptionInAppBar = false),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
+          length: 3,
         ),
-        length: 3,
       ),
     );
   }

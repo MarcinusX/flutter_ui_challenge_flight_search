@@ -34,25 +34,25 @@ class FlightStopCardState extends State<FlightStopCard>
   void initState() {
     super.initState();
     animationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1200));
+        vsync: this, duration: Duration(milliseconds: 1000));
     cardSizeAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.2, 1.0, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.2, 0.9, curve: new ElasticOutCurve(0.8)));
     durationPositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.05, 0.8, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.05, 0.95, curve: new ElasticOutCurve(0.95)));
     airportsPositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.0, 0.7, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.0, 0.8, curve: new ElasticOutCurve(0.95)));
     datePositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.1, 0.9, curve: new ElasticOutCurve(0.8)));
+        curve: new Interval(0.1, 0.95, curve: new ElasticOutCurve(0.95)));
     pricePositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.0, 0.75, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.0, 0.9, curve: new ElasticOutCurve(0.95)));
     fromToPositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.1, 0.7, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.1, 0.95, curve: new ElasticOutCurve(0.95)));
     lineAnimation = new CurvedAnimation(
         parent: animationController,
         curve: new Interval(0.0, 0.2, curve: Curves.linear));
