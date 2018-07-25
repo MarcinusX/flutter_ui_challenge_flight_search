@@ -1,3 +1,6 @@
+import 'package:flight_search/air_asia_bar.dart';
+import 'package:flight_search/flight_stop.dart';
+import 'package:flight_search/ticket.dart';
 import 'package:flutter/material.dart';
 
 class TicketsPage extends StatefulWidget {
@@ -5,29 +8,96 @@ class TicketsPage extends StatefulWidget {
   _TicketsPageState createState() => _TicketsPageState();
 }
 
-class _TicketsPageState extends State<TicketsPage> {
+class _TicketsPageState extends State<TicketsPage>
+    with TickerProviderStateMixin {
+  List<TicketFlightStop> stops = [
+    new TicketFlightStop("Sahara", "SHE", "Macao", "MAC", "SE2341"),
+    new TicketFlightStop("Macao", "MAC", "Cape Verde", "CAP", "KU2342"),
+    new TicketFlightStop("Cape Verde", "CAP", "Ireland", "IRE", "KR3452"),
+    new TicketFlightStop("Ireland", "IRE", "Sahara", "SHE", "MR4321"),
+  ];
+
+  AnimationController cardEntranceAnimationController;
+  List<Animation> ticketAnimations;
+  Animation fabAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    cardEntranceAnimationController = new AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1200),
+    );
+    cardEntranceAnimationController.forward();
+    ticketAnimations = stops.map((stop) {
+      int index = stops.indexOf(stop);
+      double start = index * 0.1;
+      double duration = 0.6;
+      double end = duration + start;
+      return new Tween<double>(begin: 800.0, end: 0.0).animate(
+          new CurvedAnimation(
+              parent: cardEntranceAnimationController,
+              curve: new Interval(start, end, curve: Curves.decelerate)));
+    }).toList();
+    fabAnimation = new CurvedAnimation(
+        parent: cardEntranceAnimationController,
+        curve: Interval(0.7, 1.0, curve: Curves.decelerate));
+  }
+
+  @override
+  void dispose() {
+    cardEntranceAnimationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: new Stack(
         children: <Widget>[
-          new Container(
-            decoration: new BoxDecoration(
-              gradient: new LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.red, const Color(0xFFE64C85)],
+          AirAsiaBar(),
+          Positioned.fill(
+            top: MediaQuery
+                .of(context)
+                .padding
+                .top + 64.0,
+            child: SingleChildScrollView(
+              child: new Column(
+                children: _buildTickets().toList(),
               ),
             ),
-            height: 240.0,
-          ),
-          new AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            centerTitle: true,
-            title: new Text("AirAsia"),
-          ),
+          )
         ],
+      ),
+      floatingActionButton: _buildFab(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Iterable<Widget> _buildTickets() {
+    return stops.map((stop) {
+      int index = stops.indexOf(stop);
+      return AnimatedBuilder(
+        animation: cardEntranceAnimationController,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          child: Ticket(stop: stop),
+        ),
+        builder: (context, child) =>
+        new Transform.translate(
+          offset: Offset(0.0, ticketAnimations[index].value),
+          child: child,
+        ),
+      );
+    });
+  }
+
+  _buildFab() {
+    return ScaleTransition(
+      scale: fabAnimation,
+      child: FloatingActionButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: new Icon(Icons.fingerprint),
       ),
     );
   }

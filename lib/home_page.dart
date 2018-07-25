@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
                 colors: [Colors.red, const Color(0xFFE64C85)],
               ),
             ),
-            height: 240.0,
+            height: 200.0,
           ),
           new AppBar(
             backgroundColor: Colors.transparent,
