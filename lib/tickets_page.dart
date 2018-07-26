@@ -26,7 +26,7 @@ class _TicketsPageState extends State<TicketsPage>
     super.initState();
     cardEntranceAnimationController = new AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1200),
+      duration: Duration(milliseconds: 100),
     );
     cardEntranceAnimationController.forward();
     ticketAnimations = stops.map((stop) {

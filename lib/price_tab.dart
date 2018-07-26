@@ -19,7 +19,7 @@ class PriceTab extends StatefulWidget {
 }
 
 class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
-  AnimationController _initialPlainAnimationController;
+  AnimationController _planeSizeAnimationController;
   Animation<double> _planeSizeAnimation;
   AnimationController _planeTravelAnimationController;
   Animation<double> _planeTravelAnimation;
@@ -50,12 +50,12 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _initAnimations();
     _flightStops
         .forEach((stop) => _stopKeys.add(new GlobalKey<FlightStopCardState>()));
-    _initialPlainAnimationController.forward();
+    _planeSizeAnimationController.forward();
   }
 
   @override
   void dispose() {
-    _initialPlainAnimationController.dispose();
+    _planeSizeAnimationController.dispose();
     super.dispose();
   }
 
@@ -65,11 +65,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
       width: double.infinity,
       child: Stack(
         alignment: Alignment.center,
-        children: <Widget>[
-          _initialPlainAnimationController.isCompleted
-              ? _buildTravelPlaneAnimation()
-              : _buildInitialPlaneAnimation(),
-        ]
+        children: <Widget>[_buildTravelPlaneAnimation()]
           ..addAll(_flightStops.map((stop) => _buildStopCard(stop)))..addAll(
               _flightStops.map((stop) => _buildDot(stop)))
           ..add(_buildFab()),
@@ -99,10 +95,14 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   }
 
   Widget _buildPlaneIcon() {
-    return Icon(
-      Icons.airplanemode_active,
-      color: Colors.red,
-      size: _planeIconSize,
+    return AnimatedBuilder(
+      animation: _planeSizeAnimation,
+      builder: (context, child) =>
+          Icon(
+            Icons.airplanemode_active,
+            color: Colors.red,
+            size: _planeIconSize,
+          ),
     );
   }
 
@@ -127,7 +127,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   void _initPlaneTravelAnimation() {
     _planeTravelAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
     );
     _planeTravelAnimation = CurvedAnimation(
       parent: _planeTravelAnimationController,
@@ -136,20 +136,22 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   }
 
   void _initInitialAnimation() {
-    _initialPlainAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+    _planeSizeAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 340),
       vsync: this,
     )
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           widget.onPlaneSizeAnimated();
-          _planeTravelAnimationController.forward();
-          new Future.delayed(Duration(milliseconds: 200),
+          Future.delayed(Duration(milliseconds: 500),
+                  () => _planeTravelAnimationController.forward());
+          Future.delayed(Duration(milliseconds: 700),
                   () => _dotsAnimationController.forward());
         }
       });
-    _planeSizeAnimation = Tween<double>(begin: 60.0, end: 36.0)
-        .animate(_initialPlainAnimationController);
+    _planeSizeAnimation = Tween<double>(begin: 60.0, end: 36.0).animate(
+        CurvedAnimation(
+            parent: _planeSizeAnimationController, curve: Curves.easeOut));
   }
 
   Widget _buildDot(FlightStop stop) {
@@ -174,8 +176,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     //what part of whole animation takes one dot travel
     final double slideDurationInterval = 0.4;
     //what are delays between dot animations
-    final double slideDelayInterval =
-    0.2; //what are delays between dot animations
+    final double slideDelayInterval = 0.2;
     //at the bottom of the screen
     double startingMarginTop = widget.height + 16.0;
     //minimal margin from the top (where first dot will be placed)
@@ -200,23 +201,17 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
 
   void _initDotAnimationController() {
     _dotsAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+        vsync: this, duration: Duration(milliseconds: 500));
     _dotsAnimationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _animateFlightStopCards().then(
-              (_) =>
-          new Future.delayed(
-            Duration(milliseconds: 800),
-                () => _animateFab(),
-          ),
-        );
+        _animateFlightStopCards().then((_) => _animateFab());
       }
     });
   }
 
   Future _animateFlightStopCards() async {
     return Future.forEach(_stopKeys, (GlobalKey<FlightStopCardState> stopKey) {
-      return new Future.delayed(Duration(milliseconds: 200), () {
+      return new Future.delayed(Duration(milliseconds: 250), () {
         stopKey.currentState.runEntryAnimation();
       });
     });
@@ -257,8 +252,9 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         scale: _fabAnimation,
         child: FloatingActionButton(
           onPressed: () =>
-              Navigator.of(context).push(
-                  new FadeRoute(builder: (context) => TicketsPage())),
+              Navigator
+                  .of(context)
+                  .push(new FadeRoute(builder: (context) => TicketsPage())),
           child: Icon(Icons.check),
         ),
       ),

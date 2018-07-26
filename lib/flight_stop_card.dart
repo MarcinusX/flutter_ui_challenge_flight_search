@@ -34,19 +34,19 @@ class FlightStopCardState extends State<FlightStopCard>
   void initState() {
     super.initState();
     animationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+        vsync: this, duration: Duration(milliseconds: 600));
     cardSizeAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.2, 0.9, curve: new ElasticOutCurve(0.8)));
+        curve: new Interval(0.0, 0.9, curve: new ElasticOutCurve(0.8)));
     durationPositionAnimation = new CurvedAnimation(
         parent: animationController,
         curve: new Interval(0.05, 0.95, curve: new ElasticOutCurve(0.95)));
     airportsPositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.0, 0.8, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.1, 1.0, curve: new ElasticOutCurve(0.95)));
     datePositionAnimation = new CurvedAnimation(
         parent: animationController,
-        curve: new Interval(0.1, 0.95, curve: new ElasticOutCurve(0.95)));
+        curve: new Interval(0.1, 0.8, curve: new ElasticOutCurve(0.95)));
     pricePositionAnimation = new CurvedAnimation(
         parent: animationController,
         curve: new Interval(0.0, 0.9, curve: new ElasticOutCurve(0.95)));
