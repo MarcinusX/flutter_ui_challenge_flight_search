@@ -1,4 +1,5 @@
 import 'package:flight_search/air_asia_bar.dart';
+import 'package:flight_search/content_card.dart';
 import 'package:flight_search/rounded_button.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class HomePage extends StatelessWidget {
               child: new Column(
                 children: <Widget>[
                   _buildButtonsRow(),
-                  Container(), //TODO: Implement a card
+                  Expanded(child: ContentCard()),
                 ],
               ),
             ),
