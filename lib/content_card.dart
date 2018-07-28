@@ -1,4 +1,5 @@
 import 'package:flight_search/multicity_input.dart';
+import 'package:flight_search/price_tab.dart';
 import 'package:flutter/material.dart';
 
 class ContentCard extends StatefulWidget {
@@ -7,6 +8,9 @@ class ContentCard extends StatefulWidget {
 }
 
 class _ContentCardState extends State<ContentCard> {
+  bool showInput = true;
+  bool showInputTabOptions = true;
+
   @override
   Widget build(BuildContext context) {
     return new Card(
@@ -40,9 +44,9 @@ class _ContentCardState extends State<ContentCard> {
         ),
         new TabBar(
           tabs: [
-            Tab(text: "Flight"),
-            Tab(text: "Train"),
-            Tab(text: "Bus"),
+            Tab(text: showInputTabOptions ? "Flight" : "Price"),
+            Tab(text: showInputTabOptions ? "Train" : "Duration"),
+            Tab(text: showInputTabOptions ? "Bus" : "Stops"),
           ],
           labelColor: Colors.black,
           unselectedLabelColor: Colors.grey,
@@ -59,7 +63,13 @@ class _ContentCardState extends State<ContentCard> {
             minHeight: viewportConstraints.maxHeight - 48.0,
           ),
           child: new IntrinsicHeight(
-            child: _buildMulticityTab(),
+            child: showInput
+                ? _buildMulticityTab()
+                : PriceTab(
+                    height: viewportConstraints.maxHeight - 48.0,
+                    onPlaneFlightStart: () =>
+                        setState(() => showInputTabOptions = false),
+                  ),
           ),
         ),
       ),
@@ -74,7 +84,7 @@ class _ContentCardState extends State<ContentCard> {
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0, top: 8.0),
           child: FloatingActionButton(
-            onPressed: () {},
+            onPressed: () => setState(() => showInput = false),
             child: Icon(Icons.timeline, size: 36.0),
           ),
         ),
