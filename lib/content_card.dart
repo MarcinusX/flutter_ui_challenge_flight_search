@@ -1,5 +1,5 @@
 import 'package:flight_search/multicity_input.dart';
-import 'package:flight_search/price_tab.dart';
+import 'package:flight_search/price_tab/price_tab.dart';
 import 'package:flutter/material.dart';
 
 class ContentCard extends StatefulWidget {
