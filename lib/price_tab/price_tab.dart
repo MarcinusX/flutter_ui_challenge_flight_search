@@ -31,8 +31,10 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   AnimationController _planeSizeAnimationController;
   AnimationController _planeTravelController;
   AnimationController _dotsAnimationController;
+  AnimationController _fabAnimationController;
   Animation _planeSizeAnimation;
   Animation _planeTravelAnimation;
+  Animation _fabAnimation;
 
   List<Animation<double>> _dotPositions = [];
 
@@ -55,6 +57,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _initPlaneTravelAnimations();
     _initDotAnimationController();
     _initDotAnimations();
+    _initFabAnimationController();
     _flightStops
         .forEach((stop) => _stopKeys.add(new GlobalKey<FlightStopCardState>()));
     _planeSizeAnimationController.forward();
@@ -65,6 +68,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _planeSizeAnimationController.dispose();
     _planeTravelController.dispose();
     _dotsAnimationController.dispose();
+    _fabAnimationController.dispose();
     super.dispose();
   }
 
@@ -76,7 +80,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         alignment: Alignment.center,
         children: <Widget>[_buildPlane()]
           ..addAll(_flightStops.map(_buildStopCard))
-          ..addAll(_flightStops.map(_mapFlightStopToDot)),
+          ..addAll(_flightStops.map(_mapFlightStopToDot))
+          ..add(_buildFab()),
       ),
     );
   }
@@ -136,6 +141,19 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
             top: _planeTopPadding,
             child: child,
           ),
+    );
+  }
+
+  Widget _buildFab() {
+    return Positioned(
+      bottom: 16.0,
+      child: ScaleTransition(
+        scale: _fabAnimation,
+        child: FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.check, size: 36.0),
+        ),
+      ),
     );
   }
 
@@ -206,7 +224,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         vsync: this, duration: Duration(milliseconds: 500))
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          _animateFlightStopCards();
+          _animateFlightStopCards().then((_) => _animateFab());
         }
       });
   }
@@ -217,5 +235,16 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         stopKey.currentState.runAnimation();
       });
     });
+  }
+
+  void _initFabAnimationController() {
+    _fabAnimationController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 300));
+    _fabAnimation = new CurvedAnimation(
+        parent: _fabAnimationController, curve: Curves.easeOut);
+  }
+
+  _animateFab() {
+    _fabAnimationController.forward();
   }
 }
