@@ -26,7 +26,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     FlightStop("ERT", "TVS", "JUN 20", "6h 25m", "\$718", "9:26 am - 3:43 pm"),
     FlightStop("KKR", "RTY", "JUN 20", "6h 25m", "\$663", "9:26 am - 3:43 pm"),
   ];
-  final double _cardHeight = 80.0;
+  final List<GlobalKey<FlightStopCardState>> _stopKeys = [];
 
   AnimationController _planeSizeAnimationController;
   AnimationController _planeTravelController;
@@ -55,6 +55,8 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     _initPlaneTravelAnimations();
     _initDotAnimationController();
     _initDotAnimations();
+    _flightStops
+        .forEach((stop) => _stopKeys.add(new GlobalKey<FlightStopCardState>()));
     _planeSizeAnimationController.forward();
   }
 
@@ -95,6 +97,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
             isLeft ? Container() : Expanded(child: Container()),
             Expanded(
               child: FlightStopCard(
+                key: _stopKeys[index],
                 flightStop: stop,
                 isLeft: isLeft,
               ),
@@ -124,7 +127,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
           AnimatedPlaneIcon(animation: _planeSizeAnimation),
           Container(
             width: 2.0,
-            height: _flightStops.length * _cardHeight * 0.8,
+            height: _flightStops.length * FlightStopCard.height * 0.8,
             color: Color.fromARGB(255, 200, 200, 200),
           ),
         ],
@@ -178,13 +181,13 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     double startingMarginTop = widget.height;
     //minimal margin from the top (where first dot will be placed)
     double minMarginTop =
-        _minPlanePaddingTop + _planeSize + 0.5 * (0.8 * _cardHeight);
+        _minPlanePaddingTop + _planeSize + 0.5 * (0.8 * FlightStopCard.height);
 
     for (int i = 0; i < _flightStops.length; i++) {
       final start = slideDelayInterval * i;
       final end = start + slideDurationInterval;
 
-      double finalMarginTop = minMarginTop + i * (0.8 * _cardHeight);
+      double finalMarginTop = minMarginTop + i * (0.8 * FlightStopCard.height);
       Animation<double> animation = new Tween(
         begin: startingMarginTop,
         end: finalMarginTop,
@@ -200,6 +203,19 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
 
   void _initDotAnimationController() {
     _dotsAnimationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 500));
+        vsync: this, duration: Duration(milliseconds: 500))
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _animateFlightStopCards();
+        }
+      });
+  }
+
+  Future _animateFlightStopCards() async {
+    return Future.forEach(_stopKeys, (GlobalKey<FlightStopCardState> stopKey) {
+      return new Future.delayed(Duration(milliseconds: 250), () {
+        stopKey.currentState.runAnimation();
+      });
+    });
   }
 }
