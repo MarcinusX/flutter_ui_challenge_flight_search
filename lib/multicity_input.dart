@@ -11,36 +11,13 @@ class MulticityInput extends StatefulWidget {
 class MulticityInputState extends State<MulticityInput>
     with TickerProviderStateMixin {
   AnimationController textInputAnimationController;
-  Animation fromAnimation;
-  Animation toAnimation1;
-  Animation toAnimation2;
-  Animation passengersAnimation;
-  Animation departureAnimation;
-  Animation arrivalAnimation;
 
   @override
   void initState() {
     super.initState();
     textInputAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 800));
-    fromAnimation = new CurvedAnimation(
-        parent: textInputAnimationController,
-        curve: Interval(0.0, 0.2, curve: Curves.linear));
-    toAnimation1 = new CurvedAnimation(
-        parent: textInputAnimationController,
-        curve: Interval(0.15, 0.35, curve: Curves.linear));
-    toAnimation2 = new CurvedAnimation(
-        parent: textInputAnimationController,
-        curve: Interval(0.3, 0.5, curve: Curves.linear));
-    passengersAnimation = new CurvedAnimation(
-        parent: textInputAnimationController,
-        curve: Interval(0.45, 0.65, curve: Curves.linear));
-    departureAnimation = new CurvedAnimation(
-        parent: textInputAnimationController,
-        curve: Interval(0.6, 0.8, curve: Curves.linear));
-    arrivalAnimation = new CurvedAnimation(
-        parent: textInputAnimationController,
-        curve: Interval(0.75, 0.95, curve: Curves.linear));
+    textInputAnimationController.forward();
   }
 
   @override
@@ -60,7 +37,7 @@ class MulticityInputState extends State<MulticityInput>
               padding: const EdgeInsets.fromLTRB(0.0, 0.0, 64.0, 8.0),
               child: TypeableTextFormField(
                 finalText: "Kochfurt",
-                animation: fromAnimation,
+                animation: _buildInputAnimation(begin: 0.0,end: 0.2),
                 decoration: InputDecoration(
                   icon: Icon(Icons.flight_takeoff, color: Colors.red),
                   labelText: "From",
@@ -70,7 +47,7 @@ class MulticityInputState extends State<MulticityInput>
             Padding(
               padding: const EdgeInsets.fromLTRB(0.0, 0.0, 64.0, 8.0),
               child: TypeableTextFormField(
-                animation: toAnimation1,
+                animation: _buildInputAnimation(begin: 0.15,end: 0.35),
                 finalText: "Lake Xanderland",
                 decoration: InputDecoration(
                   icon: Icon(Icons.flight_land, color: Colors.red),
@@ -84,7 +61,7 @@ class MulticityInputState extends State<MulticityInput>
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: TypeableTextFormField(
-                      animation: toAnimation2,
+                      animation: _buildInputAnimation(begin: 0.3,end: 0.5),
                       finalText: "South Darian",
                       decoration: InputDecoration(
                         icon: Icon(Icons.flight_land, color: Colors.red),
@@ -105,7 +82,7 @@ class MulticityInputState extends State<MulticityInput>
             Padding(
               padding: const EdgeInsets.fromLTRB(0.0, 0.0, 64.0, 8.0),
               child: TypeableTextFormField(
-                animation: passengersAnimation,
+                animation: _buildInputAnimation(begin: 0.45,end: 0.65),
                 finalText: "4",
                 decoration: InputDecoration(
                   icon: Icon(Icons.person, color: Colors.red),
@@ -123,7 +100,7 @@ class MulticityInputState extends State<MulticityInput>
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0),
                     child: TypeableTextFormField(
-                      animation: departureAnimation,
+                      animation: _buildInputAnimation(begin: 0.6, end: 0.8),
                       finalText: "29 June 2017",
                       decoration: InputDecoration(labelText: "Departure"),
                     ),
@@ -133,7 +110,7 @@ class MulticityInputState extends State<MulticityInput>
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: TypeableTextFormField(
-                      animation: arrivalAnimation,
+                      animation: _buildInputAnimation(begin: 0.75, end: 0.95),
                       finalText: "29 July 2017",
                       decoration: InputDecoration(labelText: "Arrival"),
                     ),
@@ -146,4 +123,12 @@ class MulticityInputState extends State<MulticityInput>
       ),
     );
   }
+
+  CurvedAnimation _buildInputAnimation({double begin, double end}) {
+    return new CurvedAnimation(
+        parent: textInputAnimationController,
+        curve: Interval(begin, end, curve: Curves.linear)
+    );
+  }
+
 }
