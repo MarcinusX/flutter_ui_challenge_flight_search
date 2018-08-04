@@ -1,6 +1,7 @@
 import 'package:flight_search/multicity_input.dart';
 import 'package:flight_search/price_tab/price_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 class ContentCard extends StatefulWidget {
   @override
@@ -13,21 +14,35 @@ class _ContentCardState extends State<ContentCard> {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
-      elevation: 4.0,
-      margin: const EdgeInsets.all(8.0),
-      child: DefaultTabController(
-        child: new LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints viewportConstraints) {
-            return Column(
-              children: <Widget>[
-                _buildTabBar(),
-                _buildContentContainer(viewportConstraints),
-              ],
-            );
-          },
+    return WillPopScope(
+      onWillPop: () {
+        if (!showInput) {
+          setState(() {
+            showInput = true;
+            showInputTabOptions = true;
+          });
+          return Future(() => false);
+        } else {
+          return Future(() => true);
+        }
+      },
+      child: new Card(
+        elevation: 4.0,
+        margin: const EdgeInsets.all(8.0),
+        child: DefaultTabController(
+          child: new LayoutBuilder(
+            builder:
+                (BuildContext context, BoxConstraints viewportConstraints) {
+              return Column(
+                children: <Widget>[
+                  _buildTabBar(),
+                  _buildContentContainer(viewportConstraints),
+                ],
+              );
+            },
+          ),
+          length: 3,
         ),
-        length: 3,
       ),
     );
   }
