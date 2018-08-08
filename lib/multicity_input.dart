@@ -17,7 +17,6 @@ class MulticityInputState extends State<MulticityInput>
     super.initState();
     textInputAnimationController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 800));
-    textInputAnimationController.forward();
   }
 
   @override
