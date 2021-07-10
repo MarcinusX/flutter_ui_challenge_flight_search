@@ -8,9 +8,11 @@ class FlightStopCard extends StatefulWidget {
   static const double height = 80.0;
   static const double width = 140.0;
 
-  const FlightStopCard(
-      {Key key, @required this.flightStop, @required this.isLeft})
-      : super(key: key);
+  const FlightStopCard({
+    Key? key,
+    required this.flightStop,
+    required this.isLeft,
+  }) : super(key: key);
 
   @override
   FlightStopCardState createState() => FlightStopCardState();
@@ -18,14 +20,14 @@ class FlightStopCard extends StatefulWidget {
 
 class FlightStopCardState extends State<FlightStopCard>
     with TickerProviderStateMixin {
-  AnimationController _animationController;
-  Animation<double> _cardSizeAnimation;
-  Animation<double> _durationPositionAnimation;
-  Animation<double> _airportsPositionAnimation;
-  Animation<double> _datePositionAnimation;
-  Animation<double> _pricePositionAnimation;
-  Animation<double> _fromToPositionAnimation;
-  Animation<double> _lineAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _cardSizeAnimation;
+  late Animation<double> _durationPositionAnimation;
+  late Animation<double> _airportsPositionAnimation;
+  late Animation<double> _datePositionAnimation;
+  late Animation<double> _pricePositionAnimation;
+  late Animation<double> _fromToPositionAnimation;
+  late Animation<double> _lineAnimation;
 
   @override
   void initState() {
@@ -72,24 +74,24 @@ class FlightStopCardState extends State<FlightStopCard>
       child: AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) => new Stack(
-              alignment: Alignment.centerLeft,
-              children: <Widget>[
-                buildLine(),
-                buildCard(),
-                buildDurationText(),
-                buildAirportNamesText(),
-                buildDateText(),
-                buildPriceText(),
-                buildFromToTimeText(),
-              ],
-            ),
+          alignment: Alignment.centerLeft,
+          children: <Widget>[
+            buildLine(),
+            buildCard(),
+            buildDurationText(),
+            buildAirportNamesText(),
+            buildDateText(),
+            buildPriceText(),
+            buildFromToTimeText(),
+          ],
+        ),
       ),
     );
   }
 
   double get maxWidth {
-    RenderBox renderBox = context.findRenderObject();
-    BoxConstraints constraints = renderBox?.constraints;
+    RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    BoxConstraints? constraints = renderBox?.constraints;
     double maxWidth = constraints?.maxWidth ?? 0.0;
     return maxWidth;
   }
@@ -117,7 +119,7 @@ class FlightStopCardState extends State<FlightStopCard>
       child: Text(
         "${widget.flightStop.from} \u00B7 ${widget.flightStop.to}",
         style: new TextStyle(
-          fontSize: 14.0*animationValue,
+          fontSize: 14.0 * animationValue,
           color: Colors.grey,
         ),
       ),
@@ -145,7 +147,10 @@ class FlightStopCardState extends State<FlightStopCard>
       child: Text(
         "${widget.flightStop.price}",
         style: new TextStyle(
-            fontSize: 16.0* animationValue, color: Colors.black, fontWeight: FontWeight.bold,),
+          fontSize: 16.0 * animationValue,
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -158,7 +163,10 @@ class FlightStopCardState extends State<FlightStopCard>
       child: Text(
         "${widget.flightStop.fromToTime}",
         style: new TextStyle(
-            fontSize: 12.0* animationValue, color: Colors.grey, fontWeight: FontWeight.w500,),
+          fontSize: 12.0 * animationValue,
+          color: Colors.grey,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -178,8 +186,7 @@ class FlightStopCardState extends State<FlightStopCard>
   Positioned buildCard() {
     double animationValue = _cardSizeAnimation.value;
     double minOuterMargin = 8.0;
-    double outerMargin =
-        minOuterMargin + (1 - animationValue) * maxWidth;
+    double outerMargin = minOuterMargin + (1 - animationValue) * maxWidth;
     return Positioned(
       right: widget.isLeft ? null : outerMargin,
       left: widget.isLeft ? outerMargin : null,

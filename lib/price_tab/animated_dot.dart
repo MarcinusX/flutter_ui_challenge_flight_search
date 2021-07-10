@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 class AnimatedDot extends AnimatedWidget {
   final Color color;
   static final double size = 24.0;
+  final Animation<double> animation;
 
   AnimatedDot({
-    Key key,
-    Animation<double> animation,
-    @required this.color,
+    Key? key,
+    required this.animation,
+    required this.color,
   }) : super(key: key, listenable: animation);
 
   @override
   Widget build(BuildContext context) {
-    Animation<double> animation = super.listenable;
     return Positioned(
       top: animation.value,
       child: Container(

@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 class TypableText extends AnimatedWidget {
   final String text;
   final TextStyle style;
+  final Animation<double> animation;
 
-  TypableText({Key key, Animation<double> animation, this.text, this.style})
+  TypableText(
+      {Key? key,
+      required this.animation,
+      required this.text,
+      required this.style})
       : super(key: key, listenable: animation);
 
   @override
   Widget build(BuildContext context) {
-    final Animation<double> animation = listenable;
     int totalLettersCount = text.length;
     int currentLettersCount = (totalLettersCount * animation.value).round();
     return Text(
@@ -25,7 +29,10 @@ class TypeableTextFormField extends StatefulWidget {
   final Animation<double> animation;
 
   TypeableTextFormField(
-      {Key key, this.animation, this.finalText, this.decoration})
+      {Key? key,
+      required this.animation,
+      required this.finalText,
+      required this.decoration})
       : super(key: key);
 
   @override

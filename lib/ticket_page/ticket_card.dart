@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 class TicketCard extends StatelessWidget {
   final FlightStopTicket stop;
 
-  const TicketCard({Key key, this.stop}) : super(key: key);
+  const TicketCard({Key? key, required this.stop}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

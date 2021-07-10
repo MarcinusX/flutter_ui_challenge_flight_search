@@ -16,9 +16,9 @@ class _TicketsPageState extends State<TicketsPage>
     new FlightStopTicket("Cape Verde", "CAP", "Ireland", "IRE", "KR3452"),
     new FlightStopTicket("Ireland", "IRE", "Sahara", "SHE", "MR4321"),
   ];
-  AnimationController cardEntranceAnimationController;
-  List<Animation> ticketAnimations;
-  Animation fabAnimation;
+  late AnimationController cardEntranceAnimationController;
+  late List<Animation> ticketAnimations;
+  late Animation<double> fabAnimation;
 
   @override
   void initState() {
@@ -82,9 +82,9 @@ class _TicketsPageState extends State<TicketsPage>
           child: TicketCard(stop: stop),
         ),
         builder: (context, child) => new Transform.translate(
-              offset: Offset(0.0, ticketAnimations[index].value),
-              child: child,
-            ),
+          offset: Offset(0.0, ticketAnimations[index].value),
+          child: child,
+        ),
       );
     });
   }
