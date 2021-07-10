@@ -12,8 +12,11 @@ class PriceTab extends StatefulWidget {
   final double height;
   final VoidCallback onPlaneFlightStart;
 
-  const PriceTab({Key key, this.height, this.onPlaneFlightStart})
-      : super(key: key);
+  const PriceTab({
+    Key? key,
+    required this.height,
+    required this.onPlaneFlightStart,
+  }) : super(key: key);
 
   @override
   _PriceTabState createState() => _PriceTabState();
@@ -30,13 +33,13 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   ];
   final List<GlobalKey<FlightStopCardState>> _stopKeys = [];
 
-  AnimationController _planeSizeAnimationController;
-  AnimationController _planeTravelController;
-  AnimationController _dotsAnimationController;
-  AnimationController _fabAnimationController;
-  Animation _planeSizeAnimation;
-  Animation _planeTravelAnimation;
-  Animation _fabAnimation;
+  late AnimationController _planeSizeAnimationController;
+  late AnimationController _planeTravelController;
+  late AnimationController _dotsAnimationController;
+  late AnimationController _fabAnimationController;
+  late Animation<double> _planeSizeAnimation;
+  late Animation<double> _planeTravelAnimation;
+  late Animation<double> _fabAnimation;
 
   List<Animation<double>> _dotPositions = [];
 
@@ -140,9 +143,9 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
         ],
       ),
       builder: (context, child) => Positioned(
-            top: _planeTopPadding,
-            child: child,
-          ),
+        top: _planeTopPadding,
+        child: child!,
+      ),
     );
   }
 
@@ -152,8 +155,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
       child: ScaleTransition(
         scale: _fabAnimation,
         child: FloatingActionButton(
-          onPressed: () => Navigator
-              .of(context)
+          onPressed: () => Navigator.of(context)
               .push(FadeRoute(builder: (context) => TicketsPage())),
           child: Icon(Icons.check, size: 36.0),
         ),
@@ -168,7 +170,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           Future.delayed(Duration(milliseconds: 500), () {
-            widget?.onPlaneFlightStart();
+            widget.onPlaneFlightStart();
             _planeTravelController.forward();
           });
           Future.delayed(Duration(milliseconds: 700), () {
@@ -236,7 +238,7 @@ class _PriceTabState extends State<PriceTab> with TickerProviderStateMixin {
   Future _animateFlightStopCards() async {
     return Future.forEach(_stopKeys, (GlobalKey<FlightStopCardState> stopKey) {
       return new Future.delayed(Duration(milliseconds: 250), () {
-        stopKey.currentState.runAnimation();
+        stopKey.currentState!.runAnimation();
       });
     });
   }

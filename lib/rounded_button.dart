@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class RoundedButton extends StatelessWidget {
   final String text;
   final bool selected;
-  final GestureTapCallback onTap;
+  final GestureTapCallback? onTap;
 
-  const RoundedButton({Key key, this.text, this.selected = false, this.onTap})
-      : super(key: key);
+  const RoundedButton({
+    Key? key,
+    required this.text,
+    this.selected = false,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
